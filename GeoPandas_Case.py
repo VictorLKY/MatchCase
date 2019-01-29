@@ -14,10 +14,10 @@ from shapely.strtree import STRtree
 from osgeo import ogr
 
 ###load data###
-red = gpd.read_file('JVD_20180820.shp', encoding = 'utf-8')
+red = gpd.read_file('E:\Python\MatchCase Data\JVD_20180820.shp', encoding = 'utf-8')
 red.crs = {'init':'epsg:32748'}  #initialize projection
 
-yel = gpd.read_file('V6D.shp', encoding = 'utf-8')
+yel = gpd.read_file('E:\Python\MatchCase Data\V6D.shp', encoding = 'utf-8')
 yel.crs = {'init':'epsg:32748'}
 
 """
@@ -43,6 +43,7 @@ for index_red, row_red in red.iterrows():
         red_case.append(point_input)
 
 ###
+"""
 red['Case'] = None
 for index, points in enumerate(red_case):
     tempID = []
@@ -52,7 +53,7 @@ for index, points in enumerate(red_case):
     if tempID:
         red.loc[index, 'Case'] = tempID
     
-    
+ """   
 ###Analyze Case for proposed###
 red_centroid_tree = STRtree(red.geometry.centroid)
 yel_case = []
