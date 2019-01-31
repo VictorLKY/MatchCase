@@ -22,14 +22,14 @@ yel.crs = {'init':'epsg:32748'}
 
 """
 ###plot###
-ID = 3308
-base = yel[yel['PID'] == ID].plot()
-yel[yel['PID'] == ID].representative_point().plot(ax = base, color = 'red')
-yel[yel['PID'] == ID].centroid.plot(ax = base, color = 'm')
+base = red[red['PID'] == 15].plot()
+yel[yel['PID'] == 4515].representative_point().plot(ax = base, color = 'red')
+yel[yel['PID'] == 4485].representative_point().plot(ax = base, color = 'b')
+yel[yel['PID'] == 4515].centroid.plot(ax = base, color = 'm')
 """
 
 ###Analyze Case for GroundTruth###
-yel_centroid_tree = STRtree(yel.geometry.centroid)
+yel_centroid_tree = STRtree(yel.geometry.representative_point())
 red_case = []
 for index_red, row_red in red.iterrows():
     if yel_centroid_tree.query(Polygon(row_red['geometry'])) == []:
@@ -43,19 +43,20 @@ for index_red, row_red in red.iterrows():
         red_case.append(point_input)
 
 ###
-"""
+yel['X'] = yel['geometry'].representative_point().x
+yel['Y'] = yel['geometry'].representative_point().y
 red['Case'] = None
 for index, points in enumerate(red_case):
     tempID = []
     for point in points:
-        tempRow = yel[yel['geometry'].centroid == point]
+        tempRow = yel.query('X == @point.x and Y == @point.y')
         tempID.append(tempRow['PID'].values)
     if tempID:
         red.loc[index, 'Case'] = tempID
-    
- """   
+ 
+
 ###Analyze Case for proposed###
-red_centroid_tree = STRtree(red.geometry.centroid)
+red_centroid_tree = STRtree(red.geometry.representative_point())
 yel_case = []
 for index_yel, row_yel in yel.iterrows():
     if red_centroid_tree.query(Polygon(row_yel['geometry'])) == []:
