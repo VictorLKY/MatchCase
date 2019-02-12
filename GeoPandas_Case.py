@@ -12,12 +12,13 @@ from shapely.geometry import Point
 from shapely.geometry import Polygon
 from shapely.strtree import STRtree
 from osgeo import ogr
+from Match.matchcase import Case
 
 ###load data###
-red = gpd.read_file('E:\Python\MatchCase Data\JVD_20180820.shp', encoding = 'utf-8')
+red = gpd.read_file('Data\JVD_20180820.shp', encoding = 'utf-8')
 red.crs = {'init':'epsg:32748'}  #initialize projection
 
-yel = gpd.read_file('E:\Python\MatchCase Data\V6D.shp', encoding = 'utf-8')
+yel = gpd.read_file('Data\V6D.shp', encoding = 'utf-8')
 yel.crs = {'init':'epsg:32748'}
 
 """
@@ -27,6 +28,7 @@ yel[yel['PID'] == 4515].representative_point().plot(ax = base, color = 'red')
 yel[yel['PID'] == 4485].representative_point().plot(ax = base, color = 'b')
 yel[yel['PID'] == 4515].centroid.plot(ax = base, color = 'm')
 """
+
 
 ###Analyze Case for GroundTruth###
 yel_centroid_tree = STRtree(yel.geometry.representative_point())
@@ -42,10 +44,11 @@ for index_red, row_red in red.iterrows():
                 point_input.append(point[i])
         red_case.append(point_input)
 
-###
+
+###Transfer points to PID###
 yel['X'] = yel['geometry'].representative_point().x
 yel['Y'] = yel['geometry'].representative_point().y
-red['Case'] = None
+red['Case'] = None #Initialized the attribute column
 for index, points in enumerate(red_case):
     tempID = []
     for point in points:
@@ -53,7 +56,7 @@ for index, points in enumerate(red_case):
         tempID.append(tempRow['PID'].values)
     if tempID:
         red.loc[index, 'Case'] = tempID
- 
+
 
 ###Analyze Case for proposed###
 red_centroid_tree = STRtree(red.geometry.representative_point())
@@ -70,10 +73,5 @@ for index_yel, row_yel in yel.iterrows():
                 point_input.append(point[i])
         yel_case.append(point_input)
 
-yel['Case'] = None #Initialized the attribute column
 
 
-
-#for index_v6d, row_v6d in v6d.iterrows():
-#    centroid_v6d.append(Point(row_v6d.geometry.centroid.x, row_v6d.geometry.centroid.y))
-#    centroid_v6d.append(jvd_polygon_tree.query(Point(row_v6d.geometry.centroid.x, row_v6d.geometry.centroid.y)))

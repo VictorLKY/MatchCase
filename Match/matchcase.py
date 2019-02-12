@@ -37,4 +37,4 @@ class Case:
                 tempID.append(tempRow['PID'].values)
             if tempID:
                 queried.loc[index, 'Case'] = tempID
-#        return queried
+        return queried
